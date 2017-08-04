@@ -1,0 +1,6 @@
+1. 创建default-backend
+
+
+kubectl run echoheaders --image=harborbj01.jcloud.com/iaas/echoserver:1.5 --replicas=1 --port=8080 
+kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-x 
+kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-y
