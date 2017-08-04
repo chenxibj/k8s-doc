@@ -1,6 +1,22 @@
-1. 创建default-backend
+1. 创建RBAC roel, 我也不懂这些规则，网上找的。  创建default-backend
+kubectl create -f ingress-init.yaml
 
+2. 创建nginx ingress controller
+kubectl create -f nginx-ingress-controller.yaml
+注意 hostNetwork: true
+据说1.7.2已经修复了hostport的问题，我验证没过。所以需要打开hostnetwork
 
+3.创建测试service
 kubectl run echoheaders --image=harborbj01.jcloud.com/iaas/echoserver:1.5 --replicas=1 --port=8080 
 kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-x 
 kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-y
+
+4.创建ingress rule
+kubectl create -f ingress-rule.yaml
+注意ingress规则需要和service在同一个namespace， ingress controller在kube-system
+此处有一个问题，我尝试在其他namespace创建的controller都不能用，还需要在研究一下为什么，有个参数大概长这个样子 --namespace=xxx  用来指定namespace
+另外还有一个问题就是关于如何快速找到ingress controller的主机ip，如果fail重启之后怎样确保ip不变 --- 这个是因为controller ip是对外提供服务的
+
+5.测试
+curl http://172.19.12.129/foo -H 'Host: foo.bar.com'
+注意172.19.12.129是主机ip，不是pod或者service ip
